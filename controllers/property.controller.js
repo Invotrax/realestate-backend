@@ -24,17 +24,45 @@ exports.createProperty = async (req, res) => {
 };
 
 exports.listAdmin = async (req, res) => {
-  const { page=1, limit=10, q, city, isActive } = req.query;
+  let query = req.query;
+  const { page=1, limit=10, } = query;
   const filters = {};
-  if (q) filters.$or = [{ title: new RegExp(q,'i') }, { description: new RegExp(q,'i') }];
-  if (city) filters['address.city'] = city;
-  if (isActive !== undefined) filters.isActive = isActive === 'true';
+  if(query.title){
+    filters.title = new RegExp(query.title, 'i');
+  }
+  if(query.city){
+    filters['address.city'] = new RegExp(query.city, 'i');
+  }
+   if(query.fromDate){
+    filters.createdAt = {$gte:new Date(query.fromDate)}
+  }
+  if(query.toDate){
+    filters.createdAt = {$lte:new Date(query.toDate)}
+  }
+  if(query.fromDate && query.toDate){
+    filters.createdAt = {$gte:new Date(query.fromDate), $lte:new Date(query.toDate)}
+  }
   const result = await propertyService.listAdmin({ page: Number(page), limit: Number(limit), filters });
   res.json({ success: true, ...result });
 };
 
 exports.updateProperty = async (req, res) => {
-  const prop = await propertyService.update(req.params.id, req.body);
+    const { title, description, currency, price, propertyType, address, bedrooms,bathrooms, areaSqFt, amenities, } = req.body;
+    let payload = {
+      title,
+      description,
+      currency,
+      price,
+      bedrooms,
+      bathrooms,
+      areaSqFt,
+      amenities:JSON.parse(amenities),
+      propertyType,
+      address:JSON.parse(address),
+      createdBy: req.user.id
+    }
+    
+  const prop = await propertyService.update(req.params.id, payload);
   res.json({ success: true, data: prop });
 };
 
