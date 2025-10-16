@@ -3,6 +3,7 @@ require('express-async-errors');
 const express = require('express');
 const morgan = require('morgan');
 const cors = require('cors');
+const path = require('path');
 const connectDB = require('./config/db');
 
 const authRoutes = require('./routes/auth.routes');
@@ -18,7 +19,7 @@ app.use(express.json());
 app.use(morgan('dev'));
 
 app.get('/', (req, res) => res.send('Property Listing API'));
-
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/properties', propertyRoutes);
