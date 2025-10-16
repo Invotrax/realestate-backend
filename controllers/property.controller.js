@@ -25,7 +25,7 @@ exports.createProperty = async (req, res) => {
 
 exports.listAdmin = async (req, res) => {
   let query = req.query;
-  const { page=1, limit=10, } = query;
+  const { page=1, limit=10,fromDate,toDate } = query;
   const filters = {};
   if(query.title){
     filters.title = new RegExp(query.title, 'i');
@@ -33,15 +33,10 @@ exports.listAdmin = async (req, res) => {
   if(query.city){
     filters['address.city'] = new RegExp(query.city, 'i');
   }
-   if(query.fromDate){
-    filters.createdAt = {$gte:new Date(query.fromDate)}
-  }
-  if(query.toDate){
-    filters.createdAt = {$lte:new Date(query.toDate)}
-  }
-  if(query.fromDate && query.toDate){
-    filters.createdAt = {$gte:new Date(query.fromDate), $lte:new Date(query.toDate)}
-  }
+  if (fromDate || toDate) filters.createdAt = {};
+  if (fromDate) filters.createdAt.$gte = new Date(fromDate);
+  if (toDate) filters.createdAt.$lte = new Date(toDate);
+   
   const result = await propertyService.listAdmin({ page: Number(page), limit: Number(limit), filters });
   res.json({ success: true, ...result });
 };
@@ -86,6 +81,8 @@ exports.listPublic = async (req, res) => {
   if (minPrice || maxPrice) filters.price = {};
   if (minPrice) filters.price.$gte = Number(minPrice);
   if (maxPrice) filters.price.$lte = Number(maxPrice);
+
+  
   const result = await propertyService.listPublic({ page: Number(page), limit: Number(limit), filters });
   res.json({ success: true, ...result });
 };
