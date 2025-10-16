@@ -52,7 +52,9 @@ exports.getById = async (id) => {
 
 exports.list = async ({ page=1, limit=10, filters = {} }) => {
   const skip = (page-1)*limit;
-  const query = { isDeleted: false, ...filters };
+  const query = { isDeleted: false, ...filters, role:{$ne:'superadmin'} };
+  console.log('_+_+_+_', query);
+  
   const total = await User.countDocuments(query);
   const items = await User.find(query).select('-password').skip(skip).limit(limit).sort({ createdAt: -1 });
   return { items, total, page, limit };

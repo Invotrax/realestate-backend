@@ -19,7 +19,7 @@ const propertySchema = new mongoose.Schema({
   bathrooms: { type: Number, default: 0 },
   areaSqFt: { type: Number, default: 0 },
   amenities: [{ type: String }],
-  owner: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+  createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   isActive: { type: Boolean, default: true },
   isDeleted: { type: Boolean, default: false },
   likes: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],

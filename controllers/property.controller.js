@@ -1,7 +1,24 @@
 const propertyService = require('../services/property.service');
 
 exports.createProperty = async (req, res) => {
-  const payload = { ...req.body, owner: req.user._id };
+  // const payload = { ...req.body, owner: req.user._id };
+  const { title, description, currency, price, propertyType, address, bedrooms,bathrooms, areaSqFt, amenities, } = req.body;
+  const images = req.files ? req.files.map(file => `/uploads/properties/${file.filename}`) : [];
+  let payload = {
+    title,
+    description,
+    currency,
+    price,
+    bedrooms,
+    bathrooms,
+    areaSqFt,
+    amenities:JSON.parse(amenities),
+    propertyType,
+    address:JSON.parse(address),
+    images,
+    createdBy: req.user.id
+  }
+  
   const prop = await propertyService.create(payload);
   res.status(201).json({ success: true, data: prop });
 };
@@ -48,4 +65,23 @@ exports.listPublic = async (req, res) => {
 exports.toggleLike = async (req, res) => {
   const prop = await propertyService.toggleLike(req.params.id, req.user._id);
   res.json({ success: true, likesCount: prop.likes.length, liked: prop.likes.some(l => l.toString() === req.user._id.toString()) });
+};
+exports.getPropertyById = async (req, res) => {
+  try {
+    const propertyId = req.params.id;
+
+    const property = await propertyService.getPropertyById(propertyId);
+
+    return res.status(200).json({
+      success: true,
+      message: 'Property fetched successfully',
+      data: property
+    });
+  } catch (err) {
+    console.error(err);
+    return res.status(err.statusCode || 500).json({
+      success: false,
+      message: err.message || 'Server error'
+    });
+  }
 };

@@ -11,5 +11,5 @@ exports.signup = async (req, res) => {
 exports.login = async (req, res) => {
   const { email, password } = req.body;
   const userInfo = await userService.login({ email, password, req });
-  res.json({ success: true, ...userInfo });
+  res.json({ success: true, data:userInfo });
 };

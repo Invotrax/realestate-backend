@@ -1,4 +1,4 @@
-const { body } = require('express-validator');
+const { body, param } = require('express-validator');
 
 exports.createPropertyValidation = [
   body('title').notEmpty().withMessage('Title required'),
@@ -19,4 +19,8 @@ exports.updatePropertyValidation = [
     .optional()
     .isIn(['apartment', 'house', 'plot', 'commercial', 'other']),
   body('isActive').optional().isBoolean()
+];
+
+exports.getPropertyByIdValidation = [
+  param('id').isMongoId().withMessage('Invalid property ID')
 ];

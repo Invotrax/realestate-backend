@@ -50,9 +50,25 @@ exports.superadminCreateUser = async (req, res) => {
   }
 };
 exports.listUsers = async (req, res) => {
-  const { page=1, limit=10, q } = req.query;
-  const filters = {};
-  if (q) filters.$or = [{ name: new RegExp(q, 'i') }, { email: new RegExp(q, 'i') }];
+  const query = req.query;
+  const { page=1, limit=10 } = query;
+  let filters = {};
+  // if (q) filters.$or = [{ name: new RegExp(q, 'i') }, { email: new RegExp(q, 'i') }];
+  if(query.name){
+    filters.name = new RegExp(query.name, 'i');
+  }
+  if(query.emai){
+    filters.email = new RegExp(query.email, 'i');
+  }
+  if(query.fromDate){
+    filters.createdAt = {$gte:new Date(query.fromDate)}
+  }
+  if(query.toDate){
+    filters.createdAt = {$lte:new Date(query.toDate)}
+  }
+  if(query.fromDate && query.toDate){
+    filters.createdAt = {$gte:new Date(query.fromDate), $lte:new Date(query.toDate)}
+  }
   const result = await userService.list({ page: Number(page), limit: Number(limit), filters });
   res.json({ success: true, ...result });
 };
