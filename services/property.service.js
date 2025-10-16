@@ -16,7 +16,7 @@ exports.update = async (id, payload) => {
 
 exports.listAdmin = async ({ page=1, limit=10, filters={} }) => {
   const skip = (page-1)*limit;
-  const query = { ...filters }; // admins see all including inactive and deleted if desired; adjust
+  const query = { ...filters, isDeleted:false }; // admins see all including inactive and deleted if desired; adjust
   const total = await Property.countDocuments(query);
   const items = await Property.find(query).populate('createdBy', 'name email').skip(skip).limit(limit).sort({ createdAt: -1 });
   return { items, total, page, limit};
