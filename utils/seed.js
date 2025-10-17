@@ -9,6 +9,8 @@ const bcrypt = require('bcryptjs');
 const { countriesArray } = require('./countries');
 const { statesArray } = require('./states');
 const { citiesArray } = require('./cities');
+const Amenity = require('../models/Amenity');
+const {amenities} = require('./amenities'); // path to above file
 
 const seed = async () => {
   await connectDB();
@@ -24,6 +26,8 @@ const seed = async () => {
   await Country.deleteMany({});
   await State.deleteMany({});
   await City.deleteMany({});
+
+  await Amenity.deleteMany({});
 
   
    const countryMap = {};
@@ -55,7 +59,7 @@ const seed = async () => {
     role: 'superadmin',
     isActive: true
   });
-  await superadmin.save();
+  // await superadmin.save();
 
   const admin = new User({
     name: 'Admin User',
@@ -64,7 +68,7 @@ const seed = async () => {
     role: 'admin',
     isActive: true
   });
-  await admin.save();
+  // await admin.save();
 
   const enduser = new User({
     name: 'End User',
@@ -73,10 +77,11 @@ const seed = async () => {
     role: 'user',
     isActive: true
   });
-  await enduser.save();
+  // await enduser.save();
 
  
-
+  await Amenity.insertMany(amenities);
+  console.log('✅ 30 amenities seeded successfully');
   console.log('Seeded:');
   console.log({ superadmin: superadmin.email, admin: admin.email, user: enduser.email });
   process.exit(0);
