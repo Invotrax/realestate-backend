@@ -10,6 +10,7 @@ const authRoutes = require('./routes/auth.routes');
 const userRoutes = require('./routes/user.routes');
 const propertyRoutes = require('./routes/property.routes');
 const queryRoutes = require('./routes/query.routes');
+const locationRoutes =  require('./routes/location.routes');
 
 const app = express();
 connectDB();
@@ -24,6 +25,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/properties', propertyRoutes);
 app.use('/api/queries', queryRoutes);
+app.use('/api/location',locationRoutes);
 
 // global error handler
 app.use((err, req, res, next) => {

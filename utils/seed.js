@@ -2,7 +2,13 @@ require('dotenv').config();
 const connectDB = require('../config/db');
 const User = require('../models/User');
 const Property = require('../models/Property');
+const Country = require('../models/Country');
+const State = require('../models/State');
+const City = require('../models/City');
 const bcrypt = require('bcryptjs');
+const { countriesArray } = require('./countries');
+const { statesArray } = require('./states');
+const { citiesArray } = require('./cities');
 
 const seed = async () => {
   await connectDB();
@@ -14,6 +20,38 @@ const seed = async () => {
   // remove existing seeded users/properties (careful in prod)
   await User.deleteMany({});
   await Property.deleteMany({});
+
+  await Country.deleteMany({});
+  await State.deleteMany({});
+  await City.deleteMany({});
+
+  // const country = new Country(countriesArray);
+  // await country.save();
+  // const state = new State(statesArray);
+  // await state.save();
+  // const city = new City(citiesArray);
+  // await city.save();
+   const countryMap = {};
+    for (const c of countriesArray) {
+      const country = new Country(c);
+      const savedCountry = await country.save();
+      countryMap[c.id] = savedCountry._id;
+      console.log(`✅ Country saved: ${c.id}`);
+    }
+
+    const stateMap = {};
+    for (const s of statesArray) {
+      const state = new State({ id: s.id,name: s.name, country: s.country, isActive:true, country_id: countryMap[s.country] });
+      const savedState = await state.save();
+      stateMap[`${s.id}`] = savedState._id;
+      console.log(`✅ State saved: ${s.id}`);
+    }
+     for (const c of citiesArray) {
+       const city = new City({ id: c.id,name: c.name, state: c.state, isActive:true, state_id: stateMap[c.state] });
+      
+      await city.save();
+      console.log(`✅ City saved: ${c.name}`);
+    }
 
   const superadmin = new User({
     name: 'Super Admin',
@@ -42,25 +80,10 @@ const seed = async () => {
   });
   await enduser.save();
 
-  const property = new Property({
-    title: 'Beautiful 2BHK Apartment',
-    description: 'A comfortable 2BHK near main park.',
-    price: 4500000,
-    currency: 'INR',
-    address: { line1: '123 Main St', city: 'Mumbai', state: 'Maharashtra', country: 'India', postalCode: '400001' },
-    propertyType: 'apartment',
-    bedrooms: 2,
-    bathrooms: 2,
-    areaSqFt: 950,
-    amenities: ['parking', 'lift'],
-    owner: admin._id,
-    images: [],
-    isActive: true
-  });
-  await property.save();
+ 
 
   console.log('Seeded:');
-  console.log({ superadmin: superadmin.email, admin: admin.email, user: enduser.email, property: property.title });
+  console.log({ superadmin: superadmin.email, admin: admin.email, user: enduser.email });
   process.exit(0);
 };
 

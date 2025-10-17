@@ -8,9 +8,9 @@ const propertySchema = new mongoose.Schema({
   address: {
     line1: String,
     line2: String,
-    city: String,
-    state: String,
-    country: String,
+    city: { type: mongoose.Schema.Types.ObjectId, ref: 'cities' },
+    state: { type: mongoose.Schema.Types.ObjectId, ref: 'states' },
+    country: { type: mongoose.Schema.Types.ObjectId, ref: 'countries' },
     postalCode: String
   },
   images: [{ type: String }], // store image URLs
@@ -19,7 +19,7 @@ const propertySchema = new mongoose.Schema({
   bathrooms: { type: Number, default: 0 },
   areaSqFt: { type: Number, default: 0 },
   amenities: [{ type: String }],
-  createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+  createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
   isActive: { type: Boolean, default: true },
   isDeleted: { type: Boolean, default: false },
   likes: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
