@@ -59,7 +59,7 @@ const seed = async () => {
     role: 'superadmin',
     isActive: true
   });
-  // await superadmin.save();
+  await superadmin.save();
 
   const admin = new User({
     name: 'Admin User',
@@ -68,7 +68,7 @@ const seed = async () => {
     role: 'admin',
     isActive: true
   });
-  // await admin.save();
+  await admin.save();
 
   const enduser = new User({
     name: 'End User',
@@ -77,7 +77,7 @@ const seed = async () => {
     role: 'user',
     isActive: true
   });
-  // await enduser.save();
+  await enduser.save();
 
  
   await Amenity.insertMany(amenities);

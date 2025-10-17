@@ -15,6 +15,7 @@ const amenitySchema = new mongoose.Schema({
     type: String,
     default: ""
   },
+  isDeleted: { type: Boolean, default: false },
   isActive: {
     type: Boolean,
     default: true
