@@ -18,7 +18,10 @@ exports.listAdmin = async ({ page=1, limit=10, filters={} }) => {
   const skip = (page-1)*limit;
   const query = { ...filters, isDeleted:false }; // admins see all including inactive and deleted if desired; adjust
   const total = await Property.countDocuments(query);
-  const items = await Property.find(query).populate('createdBy', 'name email').skip(skip).limit(limit).sort({ createdAt: -1 });
+  const items = await Property.find(query)
+  .populate('createdBy', 'name email')
+  
+  .skip(skip).limit(limit).sort({ createdAt: -1 });
   return { items, total, page, limit};
 };
 
@@ -48,6 +51,9 @@ exports.softDelete = async (id) => {
 exports.getPropertyById = async (propertyId) => {
   const property = await Property.findById(propertyId)
     .populate('createdBy', 'name email role') // if createdBy is linked
+    .populate('city')
+    .populate('state')
+    .populate('country')
     .lean();
 
   if (!property) {

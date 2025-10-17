@@ -25,12 +25,7 @@ const seed = async () => {
   await State.deleteMany({});
   await City.deleteMany({});
 
-  // const country = new Country(countriesArray);
-  // await country.save();
-  // const state = new State(statesArray);
-  // await state.save();
-  // const city = new City(citiesArray);
-  // await city.save();
+  
    const countryMap = {};
     for (const c of countriesArray) {
       const country = new Country(c);

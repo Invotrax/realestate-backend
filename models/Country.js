@@ -8,4 +8,4 @@ const countrySchema = new mongoose.Schema({
   isActive: { type: Boolean, default: true }
 }, { timestamps: true });
 
-module.exports = mongoose.model('countries', countrySchema);
+module.exports = mongoose.model('Country', countrySchema);
