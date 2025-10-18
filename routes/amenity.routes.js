@@ -8,7 +8,7 @@ const { permit } = require('../middlewares/role.middleware');
 router.post('/admin', auth, permit('admin','superadmin'), amenityController.createAmenity);
 router.get('/admin', auth, permit('admin','superadmin'), amenityController.getAdminAmenities);
 router.get('/admin/:id', auth, permit('admin','superadmin'), amenityController.getAmenityById);
-router.patch('/admin/:id/status', auth, permit('admin','superadmin'), amenityController.updateStatus);
+router.patch('/admin/:id/isActive', auth, permit('admin','superadmin'), amenityController.updateStatus);
 router.delete('/admin/:id', auth, permit('admin','superadmin'), amenityController.softDelete);
 
 // Public Route

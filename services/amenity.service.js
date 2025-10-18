@@ -2,7 +2,7 @@ const Amenity = require('../models/Amenity');
 
 class AmenityService {
   async createAmenity(data) {
-    const existing = await Amenity.findOne({ name: new RegExp(`^${data.name}$`, 'i') });
+    const existing = await Amenity.findOne({ slug: new RegExp(`^${data.slug}$`, 'i') });
     if (existing) throw new Error('Amenity already exists');
 
     const amenity = new Amenity(data);
@@ -20,13 +20,12 @@ class AmenityService {
   }
 
   async updateStatus(id, isActive) {
-    const amenity = await Amenity.findByIdAndUpdate(
-      id,
-      { isActive, updatedAt: Date.now() },
-      { new: true }
-    );
-    if (!amenity) throw new Error('Amenity not found');
-    return amenity;
+    
+    const prop = await Amenity.findById(id);
+      if (!prop) throw { status: 404, message: 'Amenity not found' };
+      prop.isActive = isActive;
+      await prop.save();
+      return prop;
   }
 
   async softDelete(id) {

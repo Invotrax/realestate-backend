@@ -31,7 +31,7 @@ exports.getAmenityById = async (req, res) => {
 exports.updateStatus = async (req, res) => {
   try {
     const { isActive } = req.body;
-    const amenity = await amenityService.updateStatus(req.params.id, isActive);
+    const amenity = await amenityService.updateStatus(req.params.id, !!isActive);
     res.json({ success: true, message: 'Status updated successfully', data: amenity });
   } catch (error) {
     res.status(404).json({ success: false, message: error.message });
