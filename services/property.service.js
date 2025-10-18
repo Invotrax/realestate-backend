@@ -40,31 +40,40 @@ exports.getByCountry = async ({  filters={} } = {}) => {
 
     // Aggregation pipeline
     const result = await Property.aggregate([
-      { $match: matchCondition },
-      {
-        $group: {
-          _id: "$state",
-          propertyCount: { $sum: 1 }
-        }
-      },
-      {
-        $lookup: {from: "states", // collection name (plural of your model)
-          localField: "_id",
-          foreignField: "_id",
-          as: "state"
-        }
-      },
-      { $unwind: "$state" },
-      {
-        $project: {
-          _id: 0,
-          state: { _id: "$state._id", name: "$state.name" },
-          propertyCount: 1
-        }
-      },
-      { $sort: { propertyCount: -1 } }
-    ]);
+    { $match: matchCondition },
+    {
+      $group: {
+        _id: "$state",
+        propertyCount: { $sum: 1 },
+        sampleImage: { $first: { $arrayElemAt: ["$images", 0] } }
+      }
+    },
+    {
+      $lookup: {
+        from: "states",
+        localField: "_id",
+        foreignField: "_id",
+        as: "state"
+      }
+    },
+    { $unwind: "$state" },
+    {
+      $project: {
+        _id: 0,
+        state: { _id: "$state._id", name: "$state.name" },
+        propertyCount: 1,
+        sampleImage: 1
+      }
+    },
+    { $sort: { propertyCount: -1 } }
+  ]);
+
   return { items:result};
+};
+exports.getTopProperty = async ({  filters={} } = {}) => {
+  const matchCondition = { isDeleted: false, isActive:true, isTop:true };
+  const items = await Property.find(matchCondition).select('title price currency images bedrooms bathrooms areaSqFt').sort({ createdAt: -1 });
+  return { items:items};
 };
 
 exports.toggleStatus = async (id,key, isActive) => {

@@ -24,6 +24,7 @@ router.get('/:id', getPropertyByIdValidation, validate, propCtrl.getPropertyById
 // End-user listing & like
 router.get('/', propCtrl.listPublic); // no auth required; returns only active
 router.get('/user/get-by-country', propCtrl.getByCountry);
+router.get('/user/get-top-list', propCtrl.getTopList);
 router.post('/:id/like', auth, permit('user'), propCtrl.toggleLike);
 
 module.exports = router;
