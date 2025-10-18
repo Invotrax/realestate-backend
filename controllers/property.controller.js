@@ -2,18 +2,25 @@ const propertyService = require('../services/property.service');
 
 exports.createProperty = async (req, res) => {
   // const payload = { ...req.body, owner: req.user._id };
-  const { title, description, currency, price, propertyType, country, state, city, line1, line2, postalCode, bedrooms,bathrooms, areaSqFt, amenities, } = req.body;
+  const { title, description, currency, price, propertyType, country, state, city, line1, line2, postalCode, bedrooms,bathrooms, areaSqFt, amenities,propertyStatus,garage,garageArea,yearOfBuilt } = req.body;
   const images = req.files ? req.files.map(file => `/uploads/properties/${file.filename}`) : [];
   let payload = {
     title,
     description,
+    propertyType,
+    propertyStatus,
+
     currency,
     price,
+
     bedrooms,
     bathrooms,
     areaSqFt,
+    garage,
+    garageArea,
+    yearOfBuilt,
     amenities:JSON.parse(amenities),
-    propertyType,
+    
     country, state, city, line1, line2, postalCode,
     images,
     createdBy: req.user.id
@@ -42,28 +49,36 @@ exports.listAdmin = async (req, res) => {
 };
 
 exports.updateProperty = async (req, res) => {
-    const { title, description, currency, price, propertyType, country, state, city, line1, line2, postalCode, bedrooms,bathrooms, areaSqFt, amenities, } = req.body;
+    const { title, description, currency, price, propertyType, country, state, city, line1, line2, postalCode, bedrooms,bathrooms, areaSqFt, amenities,propertyStatus,garage,garageArea,yearOfBuilt } = req.body;
     let payload = {
       title,
       description,
+      propertyType,
+      propertyStatus,
+
       currency,
       price,
+
       bedrooms,
       bathrooms,
       areaSqFt,
+      yearOfBuilt,
+      garage,
+      garageArea,
       amenities:JSON.parse(amenities),
-      propertyType,
+
+      
       country, state, city, line1, line2, postalCode,
-      createdBy: req.user.id
+      updatedBy: req.user.id
     }
     
   const prop = await propertyService.update(req.params.id, payload);
   res.json({ success: true, data: prop });
 };
 
-exports.updateIsActive = async (req, res) => {
-  const { isActive } = req.body;
-  const prop = await propertyService.toggleIsActive(req.params.id, !!isActive);
+exports.updateStatus = async (req, res) => {
+  const { isActive, key } = req.body;
+  const prop = await propertyService.toggleStatus(req.params.id, key, !!isActive);
   res.json({ success: true, data: prop });
 };
 

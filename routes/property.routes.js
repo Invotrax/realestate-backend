@@ -17,7 +17,7 @@ router.put('/:id',
     auth, permit('admin','superadmin'),
     upload.array('images', 5),
     updatePropertyValidation, validate, propCtrl.updateProperty);
-router.patch('/:id/isActive', auth, permit('admin','superadmin'), propCtrl.updateIsActive);
+router.patch('/:id/update-status', auth, permit('admin','superadmin'), propCtrl.updateStatus);
 router.delete('/:id', auth, permit('admin','superadmin'), propCtrl.deleteProperty);
 router.get('/:id', getPropertyByIdValidation, validate, propCtrl.getPropertyById);
 

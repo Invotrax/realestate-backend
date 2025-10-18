@@ -67,11 +67,14 @@ exports.getByCountry = async ({  filters={} } = {}) => {
   return { items:result};
 };
 
-exports.toggleIsActive = async (id, isActive) => {
-  const prop = await Property.findById(id);
+exports.toggleStatus = async (id,key, isActive) => {
+ const prop = await Property.findByIdAndUpdate(
+    id,
+    { $set: { [key]: isActive } }, // Dynamically sets or adds the key
+    { new: true, runValidators: true } // returns updated doc
+  );
+
   if (!prop) throw { status: 404, message: 'Property not found' };
-  prop.isActive = isActive;
-  await prop.save();
   return prop;
 };
 
