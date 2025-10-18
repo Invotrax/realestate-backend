@@ -88,11 +88,14 @@ exports.deleteProperty = async (req, res) => {
 };
 
 exports.listPublic = async (req, res) => {
-  const { page=1, limit=10, q, city, minPrice, maxPrice, propertyType } = req.query;
+  const { page=1, limit=10, q, city,country,state,  minPrice, maxPrice, propertyType } = req.query;
   const filters = {};
   if (q) filters.$or = [{ title: new RegExp(q,'i') }, { description: new RegExp(q,'i') }];
   if (city) filters['city'] = city;
+  if (country) filters['country'] = country;
+  if (state) filters['state'] = state;
   if (propertyType) filters.propertyType = propertyType;
+  
   if (minPrice || maxPrice) filters.price = {};
   if (minPrice) filters.price.$gte = Number(minPrice);
   if (maxPrice) filters.price.$lte = Number(maxPrice);
