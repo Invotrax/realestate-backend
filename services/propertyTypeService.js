@@ -1,5 +1,5 @@
 const PropertyType = require('../models/PropertyType');
-
+const Property = require('../models/Property');
 // ✅ Create Property Type (Admin)
 exports.createPropertyType = async (data) => {
   const existing = await PropertyType.findOne({ name: data.name, isDeleted: false });
@@ -42,5 +42,56 @@ exports.getAllActivePropertyTypes = async () => {
 
 // ✅ Public Listing (General)
 exports.getFeaturedPropertyType = async () => {
-  return await PropertyType.find({ isDeleted: false, isActive: true, isFeatured:true }).select('name _id').sort({ name: 1 });
+  return await Property.aggregate([
+      // Step 1: Filter active properties
+      {
+        $match: {
+          isActive: true,
+          isDeleted: false
+        }
+      },
+
+      // Step 2: Lookup property type details
+      {
+        $lookup: {
+          from: 'propertytypes', // collection name (lowercase plural)
+          localField: 'propertyType',
+          foreignField: '_id',
+          as: 'propertyType'
+        }
+      },
+      { $unwind: '$propertyType' },
+
+      // Step 3: Only include featured property types
+      {
+        $match: {
+          'propertyType.isFeatured': true
+        }
+      },
+
+      // Step 4: Group properties by propertyType
+      {
+        $group: {
+          _id: '$propertyType._id',
+          typeName: { $first: '$propertyType.name' },
+          typeIcon: { $first: '$propertyType.icon' },
+          properties: { $push: '$$ROOT' },
+          totalProperties: { $sum: 1 }
+        }
+      },
+
+      // Step 5: Limit properties per group
+      {
+        $project: {
+          _id: 1,
+          typeName: 1,
+          typeIcon: 1,
+          totalProperties: 1,
+          properties: { $slice: ['$properties', 6] }
+        }
+      },
+
+      // Step 6: Sort by typeName or total count
+      { $sort: { typeName: 1 } }
+    ]);
 };
