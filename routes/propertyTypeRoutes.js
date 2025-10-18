@@ -12,5 +12,6 @@ router.delete('/admin/:id', auth, permit('admin','superadmin'), controller.markD
 
 // Public Route
 router.get('/', controller.listActive);
+router.get('/user/get-featured', controller.getFeatured);
 
 module.exports = router;

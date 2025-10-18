@@ -39,3 +39,8 @@ exports.markAsDeleted = async (id) => {
 exports.getAllActivePropertyTypes = async () => {
   return await PropertyType.find({ isDeleted: false, isActive: true }).sort({ name: 1 });
 };
+
+// ✅ Public Listing (General)
+exports.getFeaturedPropertyType = async () => {
+  return await PropertyType.find({ isDeleted: false, isActive: true, isFeatured:true }).select('name _id').sort({ name: 1 });
+};
