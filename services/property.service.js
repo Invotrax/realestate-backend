@@ -97,6 +97,7 @@ exports.softDelete = async (id) => {
 exports.getPropertyById = async (propertyId) => {
   const property = await Property.findById(propertyId)
     .populate('createdBy', 'name email role') // if createdBy is linked
+    .populate('propertyType')
     .populate('city')
     .populate('state')
     .populate('country')

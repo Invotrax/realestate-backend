@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const propertySchema = new mongoose.Schema({
   title: { type: String, required: true, trim: true },
   description: { type: String },
-  propertyType: { type: String, default: 'other' },
+  propertyType: { type: mongoose.Schema.Types.ObjectId, ref: 'PropertyType' },
   propertyStatus: { type: String, enum: ['sale', 'rent'], default: 'rent' },
 
   price: { type: Number, required: true },
