@@ -86,6 +86,13 @@ exports.listPublic = async (req, res) => {
   const result = await propertyService.listPublic({ page: Number(page), limit: Number(limit), filters });
   res.json({ success: true, ...result });
 };
+exports.getByCountry = async (req, res) => {
+  const { page=1, limit=10, country } = req.query;
+  const filters = {};
+  if (country) filters['country'] = country;  
+  const result = await propertyService.getByCountry({ filters });
+  res.json({ success: true, ...result });
+};
 
 exports.toggleLike = async (req, res) => {
   const prop = await propertyService.toggleLike(req.params.id, req.user._id);

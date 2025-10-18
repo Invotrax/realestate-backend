@@ -32,6 +32,40 @@ exports.listPublic = async ({ page=1, limit=10, filters={} } = {}) => {
   const items = await Property.find(baseQuery).populate('createdBy', 'name').skip(skip).limit(limit).sort({ createdAt: -1 });
   return { items, total, page, limit};
 };
+exports.getByCountry = async ({  filters={} } = {}) => {
+  const matchCondition = { isDeleted: false, isActive:true };
+    if (filters.country) {
+      matchCondition.country = new mongoose.Types.ObjectId(filters.country);
+    }
+
+    // Aggregation pipeline
+    const result = await Property.aggregate([
+      { $match: matchCondition },
+      {
+        $group: {
+          _id: "$state",
+          propertyCount: { $sum: 1 }
+        }
+      },
+      {
+        $lookup: {from: "states", // collection name (plural of your model)
+          localField: "_id",
+          foreignField: "_id",
+          as: "state"
+        }
+      },
+      { $unwind: "$state" },
+      {
+        $project: {
+          _id: 0,
+          state: { _id: "$state._id", name: "$state.name" },
+          propertyCount: 1
+        }
+      },
+      { $sort: { propertyCount: -1 } }
+    ]);
+  return { items:result};
+};
 
 exports.toggleIsActive = async (id, isActive) => {
   const prop = await Property.findById(id);
