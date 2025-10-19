@@ -69,18 +69,49 @@ exports.getFeaturedPropertyType = async () => {
         }
       },
 
-      // Step 4: Group properties by propertyType
+      // Step 4: Lookup country, state, and city details
+      {
+        $lookup: {
+          from: 'countries',
+          localField: 'country',
+          foreignField: '_id',
+          as: 'country'
+        }
+      },
+      {
+        $lookup: {
+          from: 'states',
+          localField: 'state',
+          foreignField: '_id',
+          as: 'state'
+        }
+      },
+      {
+        $lookup: {
+          from: 'cities',
+          localField: 'city',
+          foreignField: '_id',
+          as: 'city'
+        }
+      },
+
+      // Step 5: Unwind each location array (optional but cleaner)
+      { $unwind: { path: '$country', preserveNullAndEmptyArrays: true } },
+      { $unwind: { path: '$state', preserveNullAndEmptyArrays: true } },
+      { $unwind: { path: '$city', preserveNullAndEmptyArrays: true } },
+
+      // Step 6: Group properties by propertyType
       {
         $group: {
           _id: '$propertyType._id',
           typeName: { $first: '$propertyType.name' },
           typeIcon: { $first: '$propertyType.icon' },
-          properties: { $push: '$$ROOT' },
-          totalProperties: { $sum: 1 }
+          totalProperties: { $sum: 1 },
+          properties: { $push: '$$ROOT' }
         }
       },
 
-      // Step 5: Limit properties per group
+      // Step 7: Limit properties per group
       {
         $project: {
           _id: 1,
@@ -91,7 +122,7 @@ exports.getFeaturedPropertyType = async () => {
         }
       },
 
-      // Step 6: Sort by typeName or total count
+      // Step 8: Sort
       { $sort: { typeName: 1 } }
     ]);
 };
