@@ -1,4 +1,5 @@
 const Property = require('../models/Property');
+const State = require('../models/State');
 
 exports.create = async (payload) => {
   const prop = new Property(payload);
@@ -33,38 +34,41 @@ exports.listPublic = async ({ page=1, limit=10, filters={} } = {}) => {
   return { items, total, page, limit};
 };
 exports.getByCountry = async ({  filters={} } = {}) => {
-  const matchCondition = { isDeleted: false, isActive:true };
+  const matchCondition = {  isActive:true };
     if (filters.country) {
       matchCondition.country = new mongoose.Types.ObjectId(filters.country);
     }
 
     // Aggregation pipeline
-    const result = await Property.aggregate([
+    const result = await State.aggregate([
     { $match: matchCondition },
     {
-      $group: {
-        _id: "$state",
-        propertyCount: { $sum: 1 },
-        sampleImage: { $first: { $arrayElemAt: ["$images", 0] } }
-      }
-    },
-    {
       $lookup: {
-        from: "states",
-        localField: "_id",
-        foreignField: "_id",
-        as: "state"
+        from: 'properties',
+        localField: '_id',
+        foreignField: 'state',
+        as: 'properties'
       }
     },
-    { $unwind: "$state" },
+
+    // Step 3: Add computed property count
+    {
+      $addFields: {
+        propertyCount: { $size: '$properties' }
+      }
+    },
+
+    // Step 4: Project only required fields
     {
       $project: {
-        _id: 0,
-        state: { _id: "$state._id", name: "$state.name" },
-        propertyCount: 1,
-        sampleImage: 1
+        _id: 1,
+        name: 1,
+        image: 1, // image from state model
+        propertyCount: 1
       }
     },
+
+    // Step 5: Sort (optional)
     { $sort: { propertyCount: -1 } }
   ]);
 

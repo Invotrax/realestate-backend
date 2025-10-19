@@ -9,13 +9,21 @@ const upload = require('../middlewares/upload.middleware');
 // Admin / superadmin: manage properties
 router.post('/', 
     auth, permit('admin','superadmin'),
-     upload.array('images', 5),
+    
+     upload.fields([
+        { name: 'cardImage', maxCount: 1 },
+        { name: 'images', maxCount: 5 }
+    ]),
     createPropertyValidation, validate,
      propCtrl.createProperty);
 router.get('/admin', auth, permit('admin','superadmin'), propCtrl.listAdmin);
 router.put('/:id', 
+    
     auth, permit('admin','superadmin'),
-    upload.array('images', 5),
+    upload.fields([
+        { name: 'cardImage', maxCount: 1 },
+        { name: 'images', maxCount: 5 }
+    ]),
     updatePropertyValidation, validate, propCtrl.updateProperty);
 router.patch('/:id/update-status', auth, permit('admin','superadmin'), propCtrl.updateStatus);
 router.delete('/:id', auth, permit('admin','superadmin'), propCtrl.deleteProperty);

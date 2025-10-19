@@ -9,6 +9,7 @@ const propertySchema = new mongoose.Schema({
   price: { type: Number, required: true },
   currency: { type: String, default: 'INR' },
 
+  cardImage: { type: String }, // store image URLs
   images: [{ type: String }], // store image URLs
   
   yearOfBuilt: { type: Number, default: 0 },

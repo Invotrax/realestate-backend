@@ -13,6 +13,7 @@ const queryRoutes = require('./routes/query.routes');
 const locationRoutes =  require('./routes/location.routes');
 const amenityRoutes =  require('./routes/amenity.routes');
 const propertyTypeRoutes =  require('./routes/propertyTypeRoutes');
+const stateRoutes =  require('./routes/state.routes');
 
 const app = express();
 connectDB();
@@ -28,8 +29,10 @@ app.use('/api/users', userRoutes);
 app.use('/api/properties', propertyRoutes);
 app.use('/api/queries', queryRoutes);
 app.use('/api/location',locationRoutes);
+app.use('/api/states', stateRoutes);
 app.use('/api/amenities', amenityRoutes);
 app.use('/api/property-type', propertyTypeRoutes);
+
 
 // global error handler
 app.use((err, req, res, next) => {

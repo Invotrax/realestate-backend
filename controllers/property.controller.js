@@ -3,7 +3,12 @@ const propertyService = require('../services/property.service');
 exports.createProperty = async (req, res) => {
   // const payload = { ...req.body, owner: req.user._id };
   const { title, description, currency, price, propertyType, country, state, city, line1, line2, postalCode, bedrooms,bathrooms, areaSqFt, amenities,propertyStatus,garage,garageArea,yearOfBuilt } = req.body;
-  const images = req.files ? req.files.map(file => `/uploads/properties/${file.filename}`) : [];
+  
+  const cardImageFile = req.files['cardImage']?.[0];
+  const imageFiles = req.files['images'] || [];
+
+  const cardImagePath = cardImageFile ? process.env.BACKEND_URL+`/uploads/properties/${cardImageFile.filename}` : null;
+  const images = imageFiles.map(file => process.env.BACKEND_URL+`/uploads/properties/${file.filename}`);
   let payload = {
     title,
     description,
@@ -23,6 +28,7 @@ exports.createProperty = async (req, res) => {
     
     country, state, city, line1, line2, postalCode,
     images,
+    cardImage:cardImagePath,
     createdBy: req.user.id
   }
   
@@ -50,6 +56,11 @@ exports.listAdmin = async (req, res) => {
 
 exports.updateProperty = async (req, res) => {
     const { title, description, currency, price, propertyType, country, state, city, line1, line2, postalCode, bedrooms,bathrooms, areaSqFt, amenities,propertyStatus,garage,garageArea,yearOfBuilt } = req.body;
+    const cardImageFile = req.files['cardImage']?.[0];
+    const imageFiles = req.files['images'] || [];
+
+    const cardImagePath = cardImageFile ? process.env.BACKEND_URL+`/uploads/properties/${cardImageFile.filename}` : null;
+    const images = imageFiles.map(file => process.env.BACKEND_URL+`/uploads/properties/${file.filename}`);
     let payload = {
       title,
       description,
@@ -68,9 +79,12 @@ exports.updateProperty = async (req, res) => {
       amenities:JSON.parse(amenities),
 
       
+      cardImage:cardImagePath,
       country, state, city, line1, line2, postalCode,
       updatedBy: req.user.id
     }
+    console.log('_+_+_+_', payload);
+    
     
   const prop = await propertyService.update(req.params.id, payload);
   res.json({ success: true, data: prop });
