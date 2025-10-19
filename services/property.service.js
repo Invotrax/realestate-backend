@@ -20,7 +20,7 @@ exports.listAdmin = async ({ page=1, limit=10, filters={} }) => {
   const total = await Property.countDocuments(query);
   const items = await Property.find(query)
   .populate('createdBy', 'name email')
-  
+  .populate('propertyType')
   .skip(skip).limit(limit).sort({ createdAt: -1 });
   return { items, total, page, limit};
 };

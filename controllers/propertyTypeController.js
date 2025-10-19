@@ -48,7 +48,7 @@ exports.listActive = async (req, res) => {
 exports.getFeatured = async (req, res) => {
   try {
     const data = await service.getFeaturedPropertyType();
-    res.json({ success: true, data });
+    res.json({ success: true, items:data });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
   }
