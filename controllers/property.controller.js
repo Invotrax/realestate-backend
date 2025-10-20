@@ -102,20 +102,22 @@ exports.deleteProperty = async (req, res) => {
 };
 
 exports.listPublic = async (req, res) => {
-  const { page=1, limit=10, q, city,country,state,  minPrice, maxPrice, propertyType } = req.query;
+  const { currentPage=1, limit=10, keyword, city, propertyType, propertyStatus, bedrooms, bathrooms } = req.query;
   const filters = {};
-  if (q) filters.$or = [{ title: new RegExp(q,'i') }, { description: new RegExp(q,'i') }];
+  if (keyword) filters.$or = [{ title: new RegExp(keyword,'i') }, { description: new RegExp(keyword,'i') }];
   if (city) filters['city'] = city;
-  if (country) filters['country'] = country;
-  if (state) filters['state'] = state;
+
   if (propertyType) filters.propertyType = propertyType;
-  
-  if (minPrice || maxPrice) filters.price = {};
-  if (minPrice) filters.price.$gte = Number(minPrice);
-  if (maxPrice) filters.price.$lte = Number(maxPrice);
+  if (propertyStatus) filters.propertyStatus = propertyStatus;
+
+  if (bedrooms) filters.bedrooms = bedrooms;
+  if (bathrooms) filters.bathrooms = bathrooms;
 
   
-  const result = await propertyService.listPublic({ page: Number(page), limit: Number(limit), filters });
+  
+
+  
+  const result = await propertyService.listPublic({ page: Number(currentPage), limit: Number(limit), filters });
   res.json({ success: true, ...result });
 };
 exports.getByCountry = async (req, res) => {
