@@ -113,10 +113,6 @@ exports.listPublic = async (req, res) => {
   if (bedrooms) filters.bedrooms = bedrooms;
   if (bathrooms) filters.bathrooms = bathrooms;
 
-  
-  
-
-  
   const result = await propertyService.listPublic({ page: Number(currentPage), limit: Number(limit), filters });
   res.json({ success: true, ...result });
 };

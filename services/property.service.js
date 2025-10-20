@@ -30,7 +30,7 @@ exports.listPublic = async ({ page=1, limit=10, filters={} } = {}) => {
   const skip = (page-1)*limit;
   const baseQuery = { isActive: true, isDeleted: false, ...filters };
   const total = await Property.countDocuments(baseQuery);
-  const items = await Property.find(baseQuery).populate('createdBy', 'name').populate('country state', 'name').skip(skip).limit(limit).sort({ createdAt: -1 });
+  const items = await Property.find(baseQuery).populate('createdBy', 'name').populate('country state city', 'name').skip(skip).limit(limit).sort({ createdAt: -1 });
   return { items, total, page, limit};
 };
 exports.getByCountry = async ({  filters={} } = {}) => {
