@@ -1,4 +1,5 @@
 const Amenity = require('../models/Amenity');
+const Property = require('../models/Property');
 
 class AmenityService {
   async createAmenity(data) {
@@ -39,7 +40,52 @@ class AmenityService {
   }
 
   async getPublicAmenities() {
-    return await Amenity.find({ isDeleted: false, isActive: true }).sort({ name: 1 });
+    const topAmenities = await Property.aggregate([
+      {
+        $unwind: "$amenities"
+      },
+      {
+        $group: {
+          _id: { $toLower: "$amenities" }, // normalize case
+          count: { $sum: 1 }
+        }
+      },
+      {
+        $lookup: {
+          from: "amenities",
+          let: { amenityName: "$_id" },
+          pipeline: [
+            {
+              $match: {
+                $expr: { $eq: [{ $toLower: "$name" }, "$$amenityName"] }
+              }
+            },
+            {
+              $project: {
+                _id: 1,
+                name: 1,
+                icon: 1,
+                slug: 1
+              }
+            }
+          ],
+          as: "amenity"
+        }
+      },
+      { $unwind: { path: "$amenity", preserveNullAndEmptyArrays: true } },
+      {
+        $project: {
+          _id: 0,
+          name: { $ifNull: ["$amenity.name", "$_id"] },
+          icon: "$amenity.icon",
+          slug: "$amenity.slug",
+          count: 1
+        }
+      },
+      { $sort: { count: -1 } },
+      { $limit: 10 }
+    ]);
+    return topAmenities;
   }
 }
 

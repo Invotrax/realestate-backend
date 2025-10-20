@@ -12,6 +12,7 @@ router.get('/states/:countryId', locationCtrl.getStatesByCountry);
 
 // CITY
 router.get('/cities/:stateId', locationCtrl.getCitiesByState);
+router.get('/cities-user/', locationCtrl.getAllActiveCitiesWithProperty);
 
 
 module.exports = router;

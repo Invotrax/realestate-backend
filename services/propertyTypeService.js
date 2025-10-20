@@ -37,7 +37,59 @@ exports.markAsDeleted = async (id) => {
 
 // ✅ Public Listing (General)
 exports.getAllActivePropertyTypes = async () => {
-  return await PropertyType.find({ isDeleted: false, isActive: true }).sort({ name: 1 });
+  return  await PropertyType.aggregate([
+    // Step 1: Only active and not deleted property types
+      {
+        $match: {
+          isActive: true,
+          isDeleted: false
+        }
+      },
+
+      // Step 2: Lookup properties linked to this property type
+      {
+        $lookup: {
+          from: 'properties',
+          localField: '_id',
+          foreignField: 'propertyType',
+          as: 'properties',
+          pipeline: [
+            {
+              $match: {
+                isActive: true,
+                isDeleted: false
+              }
+            }
+          ]
+        }
+      },
+
+      // Step 3: Only keep property types that have at least 1 property
+      {
+        $addFields: {
+          propertyCount: { $size: "$properties" }
+        }
+      },
+      {
+        $match: {
+          propertyCount: { $gt: 0 }
+        }
+      },
+
+      // Step 4: Project final fields
+      {
+        $project: {
+          _id: 1,
+          name: 1,
+          icon: 1,
+          isFeatured: 1,
+          propertyCount: 1
+        }
+      },
+
+      // Optional: Sort alphabetically or by propertyCount descending
+      { $sort: { propertyCount: -1 } }
+    ]);
 };
 
 // ✅ Public Listing (General)
