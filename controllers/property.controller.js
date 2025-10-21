@@ -80,6 +80,7 @@ exports.updateProperty = async (req, res) => {
 
       
       cardImage:cardImagePath,
+      images,
       country, state, city, line1, line2, postalCode,
       updatedBy: req.user.id
     }
