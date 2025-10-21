@@ -17,7 +17,12 @@ const stateRoutes =  require('./routes/state.routes');
 
 const app = express();
 connectDB();
-
+const corsOptions = {
+  origin: ['http://localhost:3000', 'http://localhost:3000'], // allowed domains
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  // credentials: true, // allow cookies/auth headers
+};
 app.use(cors());
 app.use(express.json());
 app.use(morgan('dev'));
