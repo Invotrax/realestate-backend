@@ -55,7 +55,7 @@ exports.listAdmin = async (req, res) => {
 };
 
 exports.updateProperty = async (req, res) => {
-    const { title, description, currency, price, propertyType, country, state, city, line1, line2, postalCode, bedrooms,bathrooms, areaSqFt, amenities,propertyStatus,garage,garageArea,yearOfBuilt } = req.body;
+    const { title, description, currency, price, propertyType, country, state, city, line1, line2, postalCode, bedrooms,bathrooms, areaSqFt, amenities,propertyStatus,garage,garageArea,yearOfBuilt,prevImages } = req.body;
     const cardImageFile = req.files['cardImage']?.[0];
     const imageFiles = req.files['images'] || [];
 
@@ -79,12 +79,21 @@ exports.updateProperty = async (req, res) => {
       amenities:JSON.parse(amenities),
 
       
-      cardImage:cardImagePath,
       country, state, city, line1, line2, postalCode,
       updatedBy: req.user.id
     }
-    console.log('_+_+_+_', payload);
-    
+    if(cardImagePath){
+      payload.cardImage = cardImagePath
+    }
+    if(images.length){
+      payload.images = images;
+
+    }
+    if(prevImages){
+      let newImages = payload.images || []
+      let pImages = JSON.parse(prevImages);
+      payload.images = [...newImages, ...pImages]
+    }
     
   const prop = await propertyService.update(req.params.id, payload);
   res.json({ success: true, data: prop });

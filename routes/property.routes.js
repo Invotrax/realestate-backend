@@ -22,7 +22,7 @@ router.put('/:id',
     auth, permit('admin','superadmin'),
     upload.fields([
         { name: 'cardImage', maxCount: 1 },
-        // { name: 'images', maxCount: 5 }
+        { name: 'images', maxCount: 5 }
     ]),
     updatePropertyValidation, validate, propCtrl.updateProperty);
 router.patch('/:id/update-status', auth, permit('admin','superadmin'), propCtrl.updateStatus);
