@@ -15,6 +15,9 @@ exports.updatePropertyValidation = [
   body('propertyType').isMongoId().withMessage('Invalid property ID'),
   body('isActive').optional().isBoolean()
 ];
+exports.deleteGalleryImageValidation = [
+  body('imageUrl').notEmpty().withMessage('image url required'),
+];
 
 exports.getPropertyByIdValidation = [
   param('id').isMongoId().withMessage('Invalid property ID')

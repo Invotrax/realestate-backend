@@ -1,5 +1,6 @@
 const propertyService = require('../services/property.service');
-
+const fs = require('fs');
+const path = require('path');
 exports.createProperty = async (req, res) => {
   // const payload = { ...req.body, owner: req.user._id };
   const { title, description, currency, price, propertyType, country, state, city, line1, line2, postalCode, bedrooms,bathrooms, areaSqFt, amenities,propertyStatus,garage,garageArea,yearOfBuilt } = req.body;
@@ -97,6 +98,39 @@ exports.updateProperty = async (req, res) => {
     
   const prop = await propertyService.update(req.params.id, payload);
   res.json({ success: true, data: prop });
+};
+
+exports.deleteGalleryImageByUrl = async (req, res) => {
+    const {  imageUrl } = req.body;
+    
+    let imageLocation = imageUrl.split('properties/')[1];
+    const imagePath = path.join(__dirname, '../uploads/properties', imageLocation);
+    let propertyDetails = await propertyService.getPropertyById(req.params.id);
+    const index = propertyDetails.images.indexOf(imageUrl);
+    if(index >= 0){
+        propertyDetails.images.splice(index, 1);
+        const prop = await propertyService.update(req.params.id, propertyDetails);
+        console.log('_+_++_', imageLocation, imagePath);
+        
+        fs.unlink(imagePath, (err) => {
+          if (err) {
+            console.log('_+_+_', err);
+            
+            if (err.code === 'ENOENT') {
+              // File not found
+              return res.json({ success: true, message:'image Removed from details' });
+            }
+            // Other errors
+            return res.json({ success: true, message:'image Removed from details.' });
+          }
+          
+          return res.json({ success: true, message:'Image Removed successfully' });
+        });
+        
+    }else{
+      res.json({ success: false, message:'No Such image exist' });
+    }
+    
 };
 
 exports.updateStatus = async (req, res) => {
