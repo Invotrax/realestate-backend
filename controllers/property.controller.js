@@ -56,7 +56,7 @@ exports.listAdmin = async (req, res) => {
 };
 
 exports.updateProperty = async (req, res) => {
-    const { title, description, currency, price, propertyType, country, state, city, line1, line2, postalCode, bedrooms,bathrooms, areaSqFt, amenities,propertyStatus,garage,garageArea,yearOfBuilt,prevImages } = req.body;
+    const { title, description, currency, price, propertyType, country, state, city, line1, line2, postalCode, bedrooms,bathrooms, areaSqFt, amenities,propertyStatus,garage,garageArea,yearOfBuilt,prevImages,prevCardImage } = req.body;
     const cardImageFile = req.files['cardImage']?.[0];
     const imageFiles = req.files['images'] || [];
 
@@ -88,7 +88,6 @@ exports.updateProperty = async (req, res) => {
     }
     if(images.length){
       payload.images = images;
-
     }
     if(prevImages){
       let newImages = payload.images || []
@@ -97,6 +96,20 @@ exports.updateProperty = async (req, res) => {
     }
     
   const prop = await propertyService.update(req.params.id, payload);
+  if(cardImagePath){
+    let imageLocation = prevCardImage.split('properties/')[1];
+    const imagePath = path.join(__dirname, '../uploads/properties', imageLocation);
+    fs.unlink(imagePath, (err) => {
+        if (err) {
+        console.log('Error while unlink card image', err);
+        if (err.code === 'ENOENT') {
+          //FIle not found
+        }
+        // Other errors
+      }
+      console.log('Card image unlinked');
+    });
+  }
   res.json({ success: true, data: prop });
 };
 
