@@ -96,7 +96,7 @@ exports.updateProperty = async (req, res) => {
     }
     
   const prop = await propertyService.update(req.params.id, payload);
-  if(cardImagePath){
+  if(cardImagePath && prevCardImage){
     let imageLocation = prevCardImage.split('properties/')[1];
     const imagePath = path.join(__dirname, '../uploads/properties', imageLocation);
     fs.unlink(imagePath, (err) => {
