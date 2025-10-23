@@ -22,8 +22,6 @@ exports.createProperty = async (req, res) => {
     bedrooms,
     bathrooms,
     areaSqFt,
-    garage,
-    garageArea,
     yearOfBuilt,
     amenities:JSON.parse(amenities),
     
@@ -31,6 +29,12 @@ exports.createProperty = async (req, res) => {
     images,
     cardImage:cardImagePath,
     createdBy: req.user.id
+  }
+  if(garage){
+    payload.garage = garage
+  }
+  if(garageArea){
+    payload.garageArea = garageArea
   }
   
   const prop = await propertyService.create(payload);
@@ -75,14 +79,18 @@ exports.updateProperty = async (req, res) => {
       bathrooms,
       areaSqFt,
       yearOfBuilt,
-      garage,
-      garageArea,
       amenities:JSON.parse(amenities),
 
       
       country, state, city, line1, line2, postalCode,
       updatedBy: req.user.id
     }
+     if(garage){
+        payload.garage = garage
+      }
+      if(garageArea){
+        payload.garageArea = garageArea
+      }
     if(cardImagePath){
       payload.cardImage = cardImagePath
     }
