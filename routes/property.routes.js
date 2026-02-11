@@ -11,6 +11,7 @@ router.post('/',
     auth, permit('admin','superadmin'),
     
      upload.fields([
+        { name: 'qrCode', maxCount: 1 },
         { name: 'cardImage', maxCount: 1 },
         { name: 'images', maxCount: 5 }
     ]),
@@ -21,6 +22,7 @@ router.put('/:id',
     
     auth, permit('admin','superadmin'),
     upload.fields([
+        { name: 'qrCode', maxCount: 1 },
         { name: 'cardImage', maxCount: 1 },
         { name: 'images', maxCount: 5 }
     ]),

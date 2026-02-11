@@ -3,13 +3,15 @@ const fs = require('fs');
 const path = require('path');
 exports.createProperty = async (req, res) => {
   // const payload = { ...req.body, owner: req.user._id };
-  const { title, description, currency, price, propertyType, country, state, city, line1, line2, postalCode, bedrooms,bathrooms, areaSqFt, amenities,propertyStatus,garage,garageArea,yearOfBuilt } = req.body;
+  const { title, description, currency, price, propertyType, country, state, city, line1, line2, postalCode, bedrooms,bathrooms, areaSqFt, amenities,propertyStatus,garage,garageArea,yearOfBuilt,dldPermit } = req.body;
   
   const cardImageFile = req.files['cardImage']?.[0];
+  const qrCodeFile = req.files['qrCode']?.[0];
   const imageFiles = req.files['images'] || [];
 
   const cardImagePath = cardImageFile ? process.env.BACKEND_URL+`/uploads/properties/${cardImageFile.filename}` : null;
   const images = imageFiles.map(file => process.env.BACKEND_URL+`/uploads/properties/${file.filename}`);
+  const qrCodePath = qrCodeFile ? process.env.BACKEND_URL+`/uploads/properties/${qrCodeFile.filename}` : null;
   let payload = {
     title,
     description,
@@ -28,6 +30,10 @@ exports.createProperty = async (req, res) => {
     country, state, city, line1, line2, postalCode,
     images,
     cardImage:cardImagePath,
+
+    qrCode:qrCodePath,
+    dldPermit,
+
     createdBy: req.user.id
   }
   if(garage){
@@ -60,12 +66,15 @@ exports.listAdmin = async (req, res) => {
 };
 
 exports.updateProperty = async (req, res) => {
-    const { title, description, currency, price, propertyType, country, state, city, line1, line2, postalCode, bedrooms,bathrooms, areaSqFt, amenities,propertyStatus,garage,garageArea,yearOfBuilt,prevImages,prevCardImage } = req.body;
+    const { title, description, currency, price, propertyType, country, state, city, line1, line2, postalCode, bedrooms,bathrooms, areaSqFt, amenities,propertyStatus,garage,garageArea,yearOfBuilt,prevImages,prevCardImage, dldPermit, prevQrCode } = req.body;
+    
     const cardImageFile = req.files['cardImage']?.[0];
+    const qrCodeFile = req.files['qrCode']?.[0];
     const imageFiles = req.files['images'] || [];
 
     const cardImagePath = cardImageFile ? process.env.BACKEND_URL+`/uploads/properties/${cardImageFile.filename}` : null;
     const images = imageFiles.map(file => process.env.BACKEND_URL+`/uploads/properties/${file.filename}`);
+    const qrCodePath = qrCodeFile ? process.env.BACKEND_URL+`/uploads/properties/${qrCodeFile.filename}` : null;
     let payload = {
       title,
       description,
@@ -81,7 +90,8 @@ exports.updateProperty = async (req, res) => {
       yearOfBuilt,
       amenities:JSON.parse(amenities),
 
-      
+      dldPermit,
+
       country, state, city, line1, line2, postalCode,
       updatedBy: req.user.id
     }
@@ -91,6 +101,9 @@ exports.updateProperty = async (req, res) => {
       if(garageArea){
         payload.garageArea = garageArea
       }
+    if(qrCodePath){
+      payload.qrCode = qrCodePath
+    }
     if(cardImagePath){
       payload.cardImage = cardImagePath
     }
@@ -116,6 +129,21 @@ exports.updateProperty = async (req, res) => {
         // Other errors
       }
       console.log('Card image unlinked');
+    });
+  }
+
+  if(qrCodePath && prevQrCode && (prevQrCode!= undefined)){
+    let imageLocation = prevQrCode.split('properties/')[1];
+    const imagePath = path.join(__dirname, '../uploads/properties', imageLocation);
+    fs.unlink(imagePath, (err) => {
+        if (err) {
+        console.log('Error while unlink QR code', err);
+        if (err.code === 'ENOENT') {
+          //FIle not found
+        }
+        // Other errors
+      }
+      console.log('QR Code unlinked');
     });
   }
   res.json({ success: true, data: prop });
